@@ -7,8 +7,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -121,77 +119,7 @@ func login(openaiClient *openai.Client) (*http.Client, error) {
 
 	return httpClient, nil
 }
-func downloadFiles() error {
-	filesToDownload := []string{
-		"/files/0_13_4b.txt", // flaga
-		"/files/0_13_4.txt",  // flaga
-		"/files/0_12.1.txt",  // there is no such file
-	}
 
-	baseURL := "https://xyz.ag3nts.org"
-
-	// Create downloads directory if it doesn't exist
-	downloadsDir := "downloads"
-	if err := os.MkdirAll(downloadsDir, 0755); err != nil {
-		return fmt.Errorf("failed to create downloads directory: %v", err)
-	}
-
-	for _, filePath := range filesToDownload {
-		// Construct full URL
-		fullURL := baseURL + filePath
-
-		// Create filename from path
-		filename := filepath.Base(filePath)
-		filepath := filepath.Join(downloadsDir, filename)
-
-		// Check if file already exists
-		if _, err := os.Stat(filepath); err == nil {
-			log.Printf("File already exists: %s", filename)
-			continue
-		}
-
-		// Download the file
-		resp, err := http.Get(fullURL)
-		if err != nil {
-			log.Printf("Failed to download %s: %v", filePath, err)
-			continue
-		}
-		defer resp.Body.Close()
-
-		// Check response status
-		if resp.StatusCode != http.StatusOK {
-			log.Printf("Failed to download %s. Status code: %d", filePath, resp.StatusCode)
-			continue
-		}
-
-		// Create the file
-		file, err := os.Create(filepath)
-		if err != nil {
-			log.Printf("Failed to create file %s: %v", filename, err)
-			continue
-		}
-		defer file.Close()
-
-		// Copy the response body to the file
-		_, err = io.Copy(file, resp.Body)
-		if err != nil {
-			log.Printf("Failed to write file %s: %v", filename, err)
-			continue
-		}
-
-		// Read and log the content
-		content, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Printf("Failed to read response body for %s: %v", filename, err)
-			continue
-		}
-
-		log.Printf("Downloaded: %s", filename)
-		log.Printf("Content: %s", string(content))
-	}
-
-	return nil
-}
 func main() {
 	openaiKey, err := utils.GetAPIKey("openai-api-key")
 	if err != nil {
@@ -209,10 +137,16 @@ func main() {
 
 	log.Println("Login successful!: ", httpClient)
 
-	// After solving the captcha, add:
-	if err := downloadFiles(); err != nil {
-		log.Fatalf("File download failed: %v", err)
+	// Define the files to download
+	fileNames := []string{
+		"0_13_4b.txt",
+		"0_13_4.txt",
+		//"0_12.1.txt", // Example of a file that may not exist
 	}
 
-	log.Println("File downloads completed")
+	// Download the files
+	if err := utils.DownloadFiles(openaiKey, "downloads", fileNames); err != nil {
+		log.Fatalf("Failed to download files: %v", err)
+	}
+	log.Println("Files downloaded successfully.")
 }
