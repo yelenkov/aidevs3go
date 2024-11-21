@@ -19,8 +19,8 @@ func main() {
 			"pkg/utils/utils.go",
 			"api/api_spec.yaml",
 			"configs/config.yaml",
-			"docs/README.md",
 			"test/test.go",
+			"README.md",
 			"go.mod",
 			"LICENSE",
 		},
@@ -39,8 +39,4 @@ func main() {
 			}
 		}
 	}
-
-	// Optionally, write initial content to go.mod
-	goModContent := "module example.com/my_go_project\n\ngo 1.16\n"
-	os.WriteFile(filepath.Join(rootDir, "go.mod"), []byte(goModContent), 0644)
 }

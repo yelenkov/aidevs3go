@@ -23,6 +23,8 @@ go.work.sum
 
 # env file
 .env
+.cursorrules
+.cursorignore
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode
@@ -47,3 +49,6 @@ go.work.sum
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
+
+.env
+*.json
