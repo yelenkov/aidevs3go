@@ -88,3 +88,9 @@ gcloud iam service-accounts delete secret-manager-sa@$PROJECT_ID.iam.gserviceacc
 gcloud iam service-accounts keys delete KEY_ID \
     --iam-account=secret-manager-sa@$PROJECT_ID.iam.gserviceaccount.com
 ```
+
+
+### Tasks
+0. poligon
+1. capcha
+2.

@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dawidjelenkowski/aidevs3go/internal/secrets"
+	"github.com/dawidjelenkowski/aidevs3go/internal/utils"
 )
 
 const (
@@ -78,16 +77,9 @@ func verifyData(dataArray []string, apiKey string) error {
 }
 
 func main() {
-	// Initialize Secret Manager
-	sm, err := secrets.NewSecretManager("avid-truth-426717-v0")
+	apiKey, err := utils.GetAPIKey("aidevs-api-key")
 	if err != nil {
-		log.Fatalf("Failed to create secret manager: %v", err)
-	}
-
-	// Fetch API key from Secret Manager
-	apiKey, err := sm.GetSecret(context.Background(), "aidevs-api-key")
-	if err != nil {
-		log.Fatalf("Failed to get API key from Secret Manager: %v", err)
+		log.Fatalf("Failed to get API key: %v", err)
 	}
 
 	// Fetch data from the text file

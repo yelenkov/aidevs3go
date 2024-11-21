@@ -1,4 +1,4 @@
-package main
+package secret_manager
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dawidjelenkowski/aidevs3go/internal/secrets"
+	"github.com/dawidjelenkowski/aidevs3go/internal/utils"
 	"github.com/joho/godotenv"
 )
 
@@ -44,7 +44,7 @@ func readEnvSecrets() map[string]string {
 	return secretKeys
 }
 
-func main() {
+func Run() {
 	// Load .env file
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
@@ -60,7 +60,7 @@ func main() {
 	// as long as it's set in the environment
 
 	// Create secret manager
-	sm, err := secrets.NewSecretManager(projectID)
+	sm, err := utils.NewSecretManager(projectID)
 	if err != nil {
 		log.Fatalf("Failed to create secret manager: %v", err)
 	}

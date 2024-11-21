@@ -1,11 +1,17 @@
-package secrets
+package utils
 
 import (
 	"context"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
+	"github.com/joho/godotenv"
 )
 
 // SecretManager handles interactions with Google Cloud Secret Manager
@@ -84,4 +90,82 @@ func (sm *SecretManager) GetSecret(ctx context.Context, secretID string) (string
 	}
 
 	return string(result.Payload.Data), nil
+}
+
+// GetAPIKey retrieves an API key from Secret Manager by its name
+func GetAPIKey(keyName string) (string, error) {
+	// Load environment variables from .env file
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	// Get project ID from environment variables
+	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
+	if projectID == "" {
+		log.Fatal("GOOGLE_CLOUD_PROJECT not set in .env")
+	}
+
+	// Initialize Secret Manager with the fetched project ID
+	sm, err := NewSecretManager(projectID)
+	if err != nil {
+		log.Fatalf("Failed to create secret manager: %v", err)
+	}
+
+	// Get API key from Secret Manager
+	apiKey, err := sm.GetSecret(context.Background(), keyName)
+	if err != nil {
+		log.Fatalf("Failed to get %s from Secret Manager: %v", keyName, err)
+	}
+	log.Println("Successfully retrieved API key.")
+	return apiKey, nil
+}
+
+// DownloadFiles downloads files from a constructed URL based on the provided API key and filenames.
+func DownloadFiles(apiKey string, downloadPath string, fileNames []string) error {
+	// Create downloads directory if it doesn't exist
+	if err := os.MkdirAll(downloadPath, 0755); err != nil {
+		return fmt.Errorf("failed to create downloads directory: %v", err)
+	}
+
+	for _, fileName := range fileNames {
+		filePath := filepath.Join(downloadPath, fileName)
+
+		// Check if file already exists
+		if _, err := os.Stat(filePath); err == nil {
+			log.Printf("File already exists, skipping download: %s", fileName)
+			continue
+		}
+
+		// Construct URL with API key
+		url := fmt.Sprintf("https://centrala.ag3nts.org/data/%s/%s", apiKey, fileName)
+		log.Printf("Downloading file from URL: %s", url)
+
+		// Download the file
+		resp, err := http.Get(url)
+		if err != nil {
+			return fmt.Errorf("failed to download file %s: %v", fileName, err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return fmt.Errorf("failed to download file %s, status code: %d", fileName, resp.StatusCode)
+		}
+
+		// Create the file
+		file, err := os.Create(filePath)
+		if err != nil {
+			return fmt.Errorf("failed to create file %s: %v", fileName, err)
+		}
+		defer file.Close()
+
+		// Copy the response body to the file
+		_, err = io.Copy(file, resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to write file %s: %v", fileName, err)
+		}
+
+		log.Printf("File downloaded successfully: %s", fileName)
+	}
+
+	return nil
 }
