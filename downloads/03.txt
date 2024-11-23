@@ -1,5 +1,5 @@
 {
-    "apikey": "%PUT-YOUR-API-KEY-HERE%",
+    "apikey": "ac9a1ce6-abbf-48d1-a9ae-df7a80cb6488",
     "description": "This is simple calibration data used for testing purposes. Do not use it in production environment!",
     "copyright": "Copyright (C) 2238 by BanAN Technologies Inc.",
     "test-data": [
@@ -176,7 +176,7 @@
             "answer": 21,
             "test": {
                 "q": "What is the capital city of Poland?",
-                "a": "???"
+                "a": "The capital city of Poland is Warsaw."
             }
         },
         {
@@ -288,7 +288,7 @@
             "answer": 174,
             "test": {
                 "q": "name of the 2020 USA president",
-                "a": "???"
+                "a": "The President of the United States in 2020 was Donald Trump."
             }
         },
         {
@@ -937,7 +937,7 @@
         },
         {
             "question": "22 + 78",
-            "answer": 106
+            "answer": 100
         },
         {
             "question": "65 + 56",
@@ -4020,7 +4020,7 @@
             "answer": 97,
             "test": {
                 "q": "What is the capital city of Germany?",
-                "a": "???"
+                "a": "The capital city of Germany is Berlin."
             }
         },
         {
@@ -5368,7 +5368,7 @@
             "answer": 53,
             "test": {
                 "q": "What is the capital city of France?",
-                "a": "???"
+                "a": "The capital city of France is Paris."
             }
         },
         {

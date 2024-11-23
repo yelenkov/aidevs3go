@@ -17,7 +17,7 @@ gcloud services enable secretmanager.googleapis.com
 4. Then run these commands in your project root directory:
 ```sh
 # go mod init <path to github repo>
-go mod init github.com/dawidjelenkowski/aidevs3go 
+go mod init github.com/dawidjelenkowski/aidevs3go
 
 # Tidy up dependencies
 go mod tidy

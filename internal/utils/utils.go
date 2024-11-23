@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
@@ -96,13 +98,25 @@ func (sm *SecretManager) GetSecret(ctx context.Context, secretID string) (string
 func GetAPIKey(keyName string) (string, error) {
 	// Load environment variables from .env file
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		log.Printf("Error loading .env file: %v", err)
 	}
 
-	// Get project ID from environment variables
-	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
+	// Get project ID from environment variables first
+	projectID := os.Getenv("GCP_PROJECT_ID")
 	if projectID == "" {
-		log.Fatal("GOOGLE_CLOUD_PROJECT not set in .env")
+		log.Printf("GCP_PROJECT_ID not set in .env")
+	}
+
+	// If not found in env, try to get it from gcloud CLI
+	if projectID == "" {
+		out, err := exec.Command("gcloud", "config", "get-value", "project").Output()
+		if err != nil {
+			log.Printf("failed to get project ID from gcloud CLI: %v", err)
+		}
+		projectID = strings.TrimSpace(string(out))
+		if projectID == "" {
+			log.Fatal("project ID not found in environment or gcloud config")
+		}
 	}
 
 	// Initialize Secret Manager with the fetched project ID
@@ -116,8 +130,29 @@ func GetAPIKey(keyName string) (string, error) {
 	if err != nil {
 		log.Fatalf("Failed to get %s from Secret Manager: %v", keyName, err)
 	}
-	log.Println("Successfully retrieved API key.")
+	log.Printf("Successfully retrieved API key: %s", keyName)
 	return apiKey, nil
+}
+
+// GetAPIKeys fetches multiple API keys at once
+func GetAPIKeys(keyNames ...string) (map[string]string, error) {
+	keys := make(map[string]string)
+	var errors []string
+
+	for _, keyName := range keyNames {
+		key, err := GetAPIKey(keyName)
+		if err != nil {
+			errors = append(errors, fmt.Sprintf("%s: %v", keyName, err))
+			continue
+		}
+		keys[keyName] = key
+	}
+
+	if len(errors) > 0 {
+		return keys, fmt.Errorf("failed to get some API keys: %s", strings.Join(errors, "; "))
+	}
+
+	return keys, nil
 }
 
 // DownloadFiles downloads files from a constructed URL based on the provided API key and filenames.
