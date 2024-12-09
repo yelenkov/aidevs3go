@@ -1,0 +1,11 @@
+{"level":"info","app":"cenzura","keyName":"aidevs-api-key","time":"2024-12-09T20:13:07+01:00","message":"Successfully retrieved API key"}
+{"level":"info","app":"cenzura","keyName":"openai-api-key","time":"2024-12-09T20:13:07+01:00","message":"Successfully retrieved API key"}
+{"level":"info","app":"cenzura","fileName":"cenzura.txt","time":"2024-12-09T20:13:07+01:00","message":"File already exists, skipping download"}
+{"level":"info","app":"cenzura","time":"2024-12-09T20:13:07+01:00","message":"Files downloaded successfully."}
+{"level":"info","app":"cenzura","keyName":"aidevs-api-key","time":"2024-12-09T20:13:08+01:00","message":"Successfully retrieved API key"}
+{"level":"debug","app":"cenzura","url":"https://centrala.ag3nts.org/report","task":"CENZURA","content_length":97,"payload":{"answer":"Tożsamość osoby podejrzanej: CENZURA. Zamieszkały w CENZURA przy ul. CENZURA. Ma CENZURA lat.","apikey":"ac9a1ce6-abbf-48d1-a9ae-df7a80cb6488","task":"CENZURA"},"time":"2024-12-09T20:13:08+01:00","message":"Sending answer to API"}
+{"level":"info","app":"cenzura","response":{
+    "code": -1000,
+    "message": "B\u0142\u0119dna odpowied\u017a"
+},"response_length":71,"time":"2024-12-09T20:13:08+01:00","message":"Successfully processed API response"}
+{"level":"info","app":"cenzura","time":"2024-12-09T20:13:08+01:00","message":"Successfully completed all operations"}

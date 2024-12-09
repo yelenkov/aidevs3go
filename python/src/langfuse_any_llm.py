@@ -1,8 +1,11 @@
+from flask import Flask, request, jsonify
 from openai import OpenAI
 from langfuse.decorators import observe, langfuse_context
 from dotenv import load_dotenv
 import os
 load_dotenv()
+
+app = Flask(__name__)
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",

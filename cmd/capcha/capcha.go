@@ -40,6 +40,7 @@ func solveCaptcha(client *openai.Client, question string) (int, error) {
 		},
 	)
 
+	// Use the ChatService to get the completion with custom options
 	if err != nil {
 		return 0, fmt.Errorf("OpenAI API error: %v", err)
 	}
