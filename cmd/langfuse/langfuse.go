@@ -1,4 +1,4 @@
-package langfuse
+package main
 
 import (
 	"bytes"
@@ -205,7 +205,7 @@ func sendReport(apiKey string) error {
 		return fmt.Errorf("failed to open file: %v", err)
 	}
 	defer file.Close()
-	log.Println("File opened successfully. %v")
+	log.Printf("File opened successfully. %v", file)
 
 	// Load the JSON data from the file
 	var processedData JSONData
