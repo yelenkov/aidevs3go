@@ -1,10 +1,11 @@
 package utils
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -14,6 +15,7 @@ import (
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	"github.com/joho/godotenv"
+	"github.com/rs/zerolog/log"
 )
 
 // SecretManager handles interactions with Google Cloud Secret Manager
@@ -98,39 +100,39 @@ func (sm *SecretManager) GetSecret(ctx context.Context, secretID string) (string
 func GetAPIKey(keyName string) (string, error) {
 	// Load environment variables from .env file
 	if err := godotenv.Load(); err != nil {
-		log.Printf("Error loading .env file: %v", err)
+		log.Warn().Err(err).Msg("Error loading .env file")
 	}
 
 	// Get project ID from environment variables first
 	projectID := os.Getenv("GCP_PROJECT_ID")
 	if projectID == "" {
-		log.Printf("GCP_PROJECT_ID not set in .env")
+		log.Warn().Msg("GCP_PROJECT_ID not set in .env")
 	}
 
 	// If not found in env, try to get it from gcloud CLI
 	if projectID == "" {
 		out, err := exec.Command("gcloud", "config", "get-value", "project").Output()
 		if err != nil {
-			log.Printf("failed to get project ID from gcloud CLI: %v", err)
+			log.Error().Err(err).Msg("Failed to get project ID from gcloud CLI")
 		}
 		projectID = strings.TrimSpace(string(out))
 		if projectID == "" {
-			log.Fatal("project ID not found in environment or gcloud config")
+			log.Fatal().Msg("Project ID not found in environment or gcloud config")
 		}
 	}
 
 	// Initialize Secret Manager with the fetched project ID
 	sm, err := NewSecretManager(projectID)
 	if err != nil {
-		log.Fatalf("Failed to create secret manager: %v", err)
+		log.Fatal().Err(err).Msg("Failed to create secret manager")
 	}
 
 	// Get API key from Secret Manager
 	apiKey, err := sm.GetSecret(context.Background(), keyName)
 	if err != nil {
-		log.Fatalf("Failed to get %s from Secret Manager: %v", keyName, err)
+		log.Fatal().Err(err).Str("keyName", keyName).Msg("Failed to get API key from Secret Manager")
 	}
-	log.Printf("Successfully retrieved API key: %s", keyName)
+	log.Info().Str("keyName", keyName).Msg("Successfully retrieved API key")
 	return apiKey, nil
 }
 
@@ -167,13 +169,13 @@ func DownloadFiles(apiKey string, downloadPath string, fileNames []string) error
 
 		// Check if file already exists
 		if _, err := os.Stat(filePath); err == nil {
-			log.Printf("File already exists, skipping download: %s", fileName)
+			log.Info().Str("fileName", fileName).Msg("File already exists, skipping download")
 			continue
 		}
 
 		// Construct URL with API key
 		url := fmt.Sprintf("https://centrala.ag3nts.org/data/%s/%s", apiKey, fileName)
-		log.Printf("Downloading file from URL: %s", url)
+		log.Debug().Str("url", url).Str("fileName", fileName).Msg("Downloading file")
 
 		// Download the file
 		resp, err := http.Get(url)
@@ -199,8 +201,75 @@ func DownloadFiles(apiKey string, downloadPath string, fileNames []string) error
 			return fmt.Errorf("failed to write file %s: %v", fileName, err)
 		}
 
-		log.Printf("File downloaded successfully: %s", fileName)
+		log.Info().Str("fileName", fileName).Msg("File downloaded successfully")
 	}
+
+	return nil
+}
+
+// Function to read the contents of a file
+func ReadFile(filePath string) (string, error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return "", fmt.Errorf("error reading the file: %w", err)
+	}
+	return string(data), nil // Return the contents as a string
+}
+
+// Function to send the answer to the API
+func SendAnswer(content string, task string) error {
+	url := "https://centrala.ag3nts.org/report"
+
+	aidevsKey, err := GetAPIKey("aidevs-api-key")
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to get AIDevs API key")
+	}
+	// Create the payload
+	payload := map[string]string{
+		"task":   task,
+		"apikey": aidevsKey,
+		"answer": content,
+	}
+
+	// Convert payload to JSON
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("error marshaling payload: %w", err)
+	}
+
+	log.Debug().
+		Str("url", url).
+		Str("task", payload["task"]).
+		Int("content_length", len(content)).
+		RawJSON("payload", jsonData).
+		Msg("Sending answer to API")
+
+	// Create the request
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return fmt.Errorf("error creating request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Read and print the response
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("error reading response: %w", err)
+	}
+
+	log.Info().
+		RawJSON("response", body).
+		Int("response_length", len(body)).
+		Msg("Successfully processed API response")
 
 	return nil
 }
