@@ -241,7 +241,7 @@ func SendAnswer(content string, task string) error {
 		Str("url", url).
 		Str("task", payload["task"]).
 		Int("content_length", len(content)).
-		RawJSON("payload", jsonData).
+		// RawJSON("payload", jsonData).
 		Msg("Sending answer to API")
 
 	// Create the request

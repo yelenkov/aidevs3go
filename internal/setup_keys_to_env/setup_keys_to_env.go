@@ -40,9 +40,9 @@ func main() {
 	// Check which keys we need to fetch
 	keysToFetch := []string{}
 	keyMapping := map[string]string{
-		"langfuse-public-key": "LANGFUSE_PUBLIC_KEY",
-		"langfuse-secret-key": "LANGFUSE_SECRET_KEY",
-		"openai-api-key":      "OPENAI_API_KEY",
+		"langfuse-public-key":  "LANGFUSE_PUBLIC_KEY",
+		"langfu	se-secret-key": "LANGFUSE_SECRET_KEY",
+		"openai-api-key":       "OPENAI_API_KEY",
 	}
 
 	for secretKey, envKey := range keyMapping {
@@ -66,11 +66,6 @@ func main() {
 				existingEnv[envKey] = value
 			}
 		}
-	}
-
-	// Always ensure LANGFUSE_HOST is set
-	if _, exists := existingEnv["LANGFUSE_HOST"]; !exists {
-		existingEnv["LANGFUSE_HOST"] = "https://localhost:3001"
 	}
 
 	// Convert map to env file format
