@@ -1,1 +1,40 @@
-Andrzej Maj? No coś kojarzę. Był taki gość. Pamiętam. Pracował u nas w biurze. Był project managerem. Chociaż, moment, może to jednak był Arkadiusz Maj? Też na literę A. Mógłbym się pomylić. No jednak tak, Arkadiusz. Z Arkadiuszem współpracowałem w Wałbrzychu. Pamiętam, że był naprawdę wrednym facetem. Normalnie nie chciałbyś z takim pracować. Jak coś było do zrobienia, to albo stosował typową spychologię, albo zamiatał sprawę pod dywan. Nigdy człowieka nie docenił. Wszystkie zasługi brał na siebie. Był naprawdę beznadziejny. Arkadiusza pamiętam jak dziś, więc jeśli chcecie go aresztować, to jak najbardziej. Jestem za. Takich ludzi powinno się zamykać, a nie mnie, bo ja jestem niewinny. Jak chcecie, to ja wam mogę adres nawet podać. Stefana Batorego, 68D. Tylko D jak Danuta, bo pod B mieszka jego ciocia, a ona była fajna. Jak będziecie Arkadiusza aresztować, to proszę powiedzcie mu z pozdrowieniami od Adama. A on będzie wiedział, o kogo chodzi.
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Andrzej Maj? No coś kojarzę, był taki gość i pamiętam, pracował u nas w biurze. Był, o ile pamiętam, menadżerem, chociaż moment, może to jednak był Arkadiusz Maj? Też na literę A, mógłby mi się pomylić. No jednak tak, Arkadiusz. Z Arkadiuszem współpracowałem w Wałbrzychu. Pamiętam, że był naprawdę wrednym facetem. Normalnie nie chciałbyś z takim pracować. Jak coś było do zrobienia, to albo stosował typową psychologię, albo zamiatał sprawę pod dywan. Nigdy człowieka nie docenił. Wszystkie zasługi brał na siebie, był naprawdę beznadziejny. Arkadiusza pamiętam jak dziś, więc jeśli chcecie go aresztować, to jak najbardziej, jestem za. Takich ludzi powinno się zamykać, a nie mnie, bo ja jestem niewinny. Jak chcecie to ja wam mogę adres nawet podać: Stefana Batorego 68D, tylko D jak Danuta, bo pod B mieszka jego ciocia, a ona była fajna. I jak będziecie Arkadiusza aresztować, to proszę, powiedzcie mu z pozdrowieniami od Adama. On będzie wiedział o kogo chodzi."
+          }
+        ],
+        "role": "model"
+      },
+      "avgLogprobs": -0.08678948425504163,
+      "finishReason": "STOP",
+      "safetyRatings": [
+        {
+          "category": "HARM_CATEGORY_HATE_SPEECH",
+          "probability": "NEGLIGIBLE"
+        },
+        {
+          "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+          "probability": "NEGLIGIBLE"
+        },
+        {
+          "category": "HARM_CATEGORY_HARASSMENT",
+          "probability": "HIGH"
+        },
+        {
+          "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          "probability": "NEGLIGIBLE"
+        }
+      ]
+    }
+  ],
+  "modelVersion": "gemini-2.0-flash-exp",
+  "usageMetadata": {
+    "candidatesTokenCount": 289,
+    "promptTokenCount": 1926,
+    "totalTokenCount": 2215
+  }
+}

@@ -43,6 +43,7 @@ func main() {
 		"langfuse-public-key":  "LANGFUSE_PUBLIC_KEY",
 		"langfu	se-secret-key": "LANGFUSE_SECRET_KEY",
 		"openai-api-key":       "OPENAI_API_KEY",
+		"gemini-api-key":       "GEMINI_API_KEY",
 	}
 
 	for secretKey, envKey := range keyMapping {

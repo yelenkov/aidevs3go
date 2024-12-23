@@ -88,7 +88,7 @@ func Run() {
 	}
 
 	// Let's fetch and verify two specific keys as an example
-	keysToFetch := []string{"openai-api-key", "deepl-api-key"}
+	keysToFetch := []string{"openai-api-key", "gemini-api-key"}
 
 	for _, keyID := range keysToFetch {
 		value, err := sm.GetSecret(context.Background(), keyID)
