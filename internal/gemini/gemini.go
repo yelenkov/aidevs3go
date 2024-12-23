@@ -9,7 +9,7 @@ import (
 	"google.golang.org/genai"
 )
 
-// askGemini reads transcription files and asks Gemini a question using the genai SDK.
+// Read transcription files and asks Gemini a question
 func AskGemini(ctx context.Context, geminiAPIKey string, system *string, prompt string) (string, error) {
 	log.Info().Msg("Asking Gemini using genai SDK")
 
@@ -23,7 +23,7 @@ func AskGemini(ctx context.Context, geminiAPIKey string, system *string, prompt 
 
 	// Call the GenerateContent method.
 	result, err := client.Models.GenerateContent(ctx,
-		"gemini-3.0-flash-exp",
+		"gemini-2.0-flash-exp",
 		genai.Text(prompt),
 		&genai.GenerateContentConfig{
 			SystemInstruction: &genai.Content{Parts: []*genai.Part{{Text: *system}}},
@@ -42,5 +42,5 @@ func AskGemini(ctx context.Context, geminiAPIKey string, system *string, prompt 
 	// Log the output.
 	fmt.Println(string(response))
 
-	return string(response), nil
+	return result.Candidates[0].Content.Parts[0].Text, nil
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -15,10 +14,12 @@ import (
 func main() {
 	log.Info().Msg("Starting mp3 processing")
 
-	APIKEY, err := utils.GetAPIKey("gemini-api-key")
+	APIKEY, err := utils.GetAPIKey("gemini-api-key") //gemini-api-key or openai-api-key
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to get Gemini API key")
-	} // Define the input and output directories
+	}
+
+	// Define the input and output directories
 	inputDir := "documents/przesluchania"
 	outputDir := "downloads/audio"
 
@@ -29,14 +30,14 @@ func main() {
 	}
 
 	// Transcribe audio files
-	err = transcribe.TranscribeAudioFiles(APIKEY, inputDir, outputDir, "gemini")
+	err = transcribe.TranscribeAudioFiles(APIKEY, inputDir, outputDir, "gemini") // "gemini" or "whisper"
 	if err != nil {
 		log.Error().Err(err).Msg("Error during audio transcription")
 	}
+	log.Info().Msg("Audio transcription completed. Check the logs for details.")
 
-	fmt.Println("Audio transcription completed. Check the logs for details.")
-
-	var allTranscriptions string
+	// create prompt
+	var prompt string
 	files, err := os.ReadDir(outputDir)
 	if err != nil {
 		log.Error().Err(err).Str("directory", outputDir).Msg("Failed to read transcript directory")
@@ -51,18 +52,22 @@ func main() {
 				log.Error().Err(err).Str("filePath", filePath).Msg("Failed to read transcription file")
 				continue
 			}
-			allTranscriptions += string(content) + "\n\n"
+			prompt += string(content) + "\n\n"
 		}
 	}
 
 	// Ask Gemini the question
-	system := "Na jakiej ulicy znajduje się uczelnia, na której wykłada Andrzej Maj?"
+	system := "Odpowiedz zwięźle na pytanie: na jakiej ulicy znajduje się uczelnia, na której wykłada Andrzej Maj?"
 
-	geminiAnswer, err := gemini.AskGemini(context.Background(), APIKEY, &system, allTranscriptions)
+	// ask gemini
+	geminiAnswer, err := gemini.AskGemini(context.Background(), APIKEY, &system, prompt)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get answer from Gemini")
 	} else {
 		log.Info().Msg("Gemini answered the question")
+
+		// check what gemini answered
+		// fmt.Println(geminiAnswer)
 
 		// Send the answer
 		taskName := "mp3"

@@ -105,14 +105,7 @@ func AudioGemini(geminiKey, audioFilePath string) (string, error) {
 		log.Fatal().Err(err).Msg("Failed to generate content")
 	}
 
-	response, err := json.MarshalIndent(*result, "", "  ")
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to marshal result")
-	}
-
-	fmt.Println(string(response))
-
-	return string(response), nil
+	return result.Candidates[0].Content.Parts[0].Text, nil
 }
 
 // transcribeAudio calls the OpenAI Whisper API to transcribe the audio file.
