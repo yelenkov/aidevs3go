@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func Setup() {
+func Setup(taskType string) {
 	// Create logs directory if it doesn't exist
 	if err := os.MkdirAll("logs", 0755); err != nil {
 		log.Fatal().Err(err).Msg("Can't create logs directory")
@@ -34,6 +34,6 @@ func Setup() {
 	log.Logger = zerolog.New(multi).
 		With().
 		Timestamp().
-		Str("app", "cenzura").
+		Str("app", taskType).
 		Logger()
 }

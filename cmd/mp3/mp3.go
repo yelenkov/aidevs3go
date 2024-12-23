@@ -6,12 +6,14 @@ import (
 	"path/filepath"
 
 	"github.com/dawidjelenkowski/aidevs3go/internal/gemini"
+	"github.com/dawidjelenkowski/aidevs3go/internal/logging"
 	"github.com/dawidjelenkowski/aidevs3go/internal/transcribe"
 	"github.com/dawidjelenkowski/aidevs3go/internal/utils"
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
+	logging.Setup("mp3")
 	log.Info().Msg("Starting mp3 processing")
 
 	APIKEY, err := utils.GetAPIKey("gemini-api-key") //gemini-api-key or openai-api-key
@@ -65,9 +67,6 @@ func main() {
 		log.Error().Err(err).Msg("Failed to get answer from Gemini")
 	} else {
 		log.Info().Msg("Gemini answered the question")
-
-		// check what gemini answered
-		// fmt.Println(geminiAnswer)
 
 		// Send the answer
 		taskName := "mp3"

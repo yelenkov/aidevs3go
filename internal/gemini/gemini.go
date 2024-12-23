@@ -33,6 +33,7 @@ func AskGemini(ctx context.Context, geminiAPIKey string, system *string, prompt 
 	if err != nil {
 		return "", fmt.Errorf("failed to generate content: %w", err)
 	}
+	log.Debug().Interface("gemini_result", result).Msg("Gemini API Response")
 
 	// Marshal the result to JSON and pretty-print it to a byte array.
 	response, err := json.MarshalIndent(*result, "", "  ")
