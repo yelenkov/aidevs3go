@@ -1,16 +1,24 @@
 package main
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 
-	"github.com/dawidjelenkowski/aidevs3go/internal/gemini"
 	"github.com/dawidjelenkowski/aidevs3go/internal/logging"
 	"github.com/dawidjelenkowski/aidevs3go/internal/transcribe"
 	"github.com/dawidjelenkowski/aidevs3go/internal/utils"
+	"github.com/dawidjelenkowski/aidevs3go/internal/vertex"
 	"github.com/rs/zerolog/log"
 )
+
+// constants
+const location = "us-central1"
+const project = "avid-truth-426717-v0"
+const model = "gemini-2.0-flash-exp"
+
+// Define the input and output directories
+const inputDir = "documents/przesluchania"
+const outputDir = "downloads/audio"
 
 func main() {
 	logging.Setup("mp3")
@@ -20,10 +28,6 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to get Gemini API key")
 	}
-
-	// Define the input and output directories
-	inputDir := "documents/przesluchania"
-	outputDir := "downloads/audio"
 
 	// Ensure the output directory exists
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
@@ -62,7 +66,21 @@ func main() {
 	system := "Odpowiedz zwięźle na pytanie: na jakiej ulicy znajduje się uczelnia, na której wykłada Andrzej Maj?"
 
 	// ask gemini
-	geminiAnswer, err := gemini.AskGemini(context.Background(), APIKEY, &system, prompt)
+	// geminiAnswer, err := gemini.AskGemini(&gemini.GeminiConfig{
+	// 	GeminiAPIKey: APIKEY,
+	// 	Model:        model,
+	// 	System:       system,
+	// 	Prompt:       prompt,
+	// })
+
+	vertexAnswer, err := vertex.AskVertex(&vertex.VertexConfig{
+		Project:  project,
+		Location: location,
+		Model:    model,
+		System:   system,
+		Prompt:   prompt,
+	})
+
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get answer from Gemini")
 	} else {
@@ -70,7 +88,7 @@ func main() {
 
 		// Send the answer
 		taskName := "mp3"
-		err = utils.SendAnswer(geminiAnswer, taskName)
+		err = utils.SendAnswer(vertexAnswer, taskName)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to send answer")
 		} else {

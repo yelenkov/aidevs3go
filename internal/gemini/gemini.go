@@ -9,12 +9,21 @@ import (
 	"google.golang.org/genai"
 )
 
+type GeminiConfig struct {
+	GeminiAPIKey string
+	Model        string
+	System       string `optional:"true"`
+	Prompt       string
+}
+
 // Read transcription files and asks Gemini a question
-func AskGemini(ctx context.Context, geminiAPIKey string, system *string, prompt string) (string, error) {
+func AskGemini(config *GeminiConfig) (string, error) {
 	log.Info().Msg("Asking Gemini using genai SDK")
 
+	ctx := context.Background()
+
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  geminiAPIKey,
+		APIKey:  config.GeminiAPIKey,
 		Backend: genai.BackendGoogleAI,
 	})
 	if err != nil {
@@ -23,10 +32,10 @@ func AskGemini(ctx context.Context, geminiAPIKey string, system *string, prompt 
 
 	// Call the GenerateContent method.
 	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.Text(prompt),
+		config.Model,
+		genai.Text(config.Prompt),
 		&genai.GenerateContentConfig{
-			SystemInstruction: &genai.Content{Parts: []*genai.Part{{Text: *system}}},
+			SystemInstruction: &genai.Content{Parts: []*genai.Part{{Text: config.System}}},
 		},
 	)
 

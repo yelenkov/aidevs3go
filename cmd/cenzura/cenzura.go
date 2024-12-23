@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	logging.Setup()
+	logging.Setup("cenzura")
 	// Get API keys
 	aidevsKey, err := utils.GetAPIKey("aidevs-api-key")
 	if err != nil {
